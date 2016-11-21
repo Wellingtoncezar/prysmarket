@@ -1,0 +1,45 @@
+<div class="container">
+    <?php
+        $btnVoltar = $this->templateFactory->getButton('voltar',array('href'=>URL.'funcionarios/usuarios'));
+        echo $this->templateFactory->getButton('actions_buttons',array('buttons'=>$btnVoltar));
+    ?>
+    <div class="page-header">
+      <h1>Usuários <small>Edição</small></h1>
+    </div>
+    <form action="<?=URL?>funcionarios/usuarios/gerenciar/atualizar" method="post" id="form_usuarios">
+        <div class="panel panel-default">
+            <div class="panel-heading">Dados de usuário de <?=$usuario->getFuncionario()->getNome().' '.$usuario->getFuncionario()->getSobrenome()?></div>
+            <div class="panel-body">
+                <div class="form-group col-xs-6 col-md-3 col-sm-6 col-lg-6">
+                    <label>Nível de acesso</label>
+                    <select name="nivel" id="nivel" class="form-control">
+                        <option selected="selected" disabled="disabled" value="">..Selecione..</option>
+                        <?php if(!empty($niveisAcesso)):?>
+                        <?php foreach ($niveisAcesso as $nivelAcesso):?>
+                        <option value="<?= $nivelAcesso->getId()?>" <?=$usuario->getNivelAcesso()->getId() == $nivelAcesso->getId() ? 'selected="selected"' : ''?>><?=$nivelAcesso->getNome()?></option>
+                        <?php endforeach;?>
+                        <?php endif;?>
+                    </select>
+                </div>
+                <div class="form-group col-xs-6 col-md-3 col-sm-6 col-lg-6">
+                    <label>Email</label>
+                    <input type="email" class="form-control" placeholder="Email" name="email" value="<?=$usuario->getEmail()?>">
+                </div>
+                <div class="btn-group pull-right" role="group">
+                    <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span> Salvar</button>
+                </div>
+				<input type="hidden" name="id_usuario" value="<?=$usuario->getId()?>">
+            </div>
+        </div>
+     </div>
+    </form>
+</div>
+
+<script type="text/javascript" src="<?=URL?>skin/js/uploadForm.js"></script>
+<link href="<?=URL?>skin/js/croper/cropper.min.css" rel="stylesheet">
+<link href="<?=URL?>skin/js/croper/main.css" rel="stylesheet">
+<script src="<?=URL?>skin/js/croper/cropper.min.js"></script>
+<script type="text/javascript" src="<?=URL?>skin/js/jquery.maskedinput.min.js"></script>
+<script type="text/javascript" src="<?=URL?>skin/js/jquery.maskMoney.js"></script>
+<script type="text/javascript" src="<?=URL?>skin/js/jquery.validate.js"></script>
+<script type="text/javascript" src="<?=URL?>skin/js/funcionarios/usuarios/editar.js"></script>

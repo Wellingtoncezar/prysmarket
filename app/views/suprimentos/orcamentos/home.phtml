@@ -1,0 +1,102 @@
+<div class="container">
+    <?php
+
+    ?>
+    <div class="page-header">
+      <h1>Orçamentos</h1>
+    </div>
+    <div class="middle-content">
+        <?php
+            $thead = '  <tr>
+                            <th width="100">Código</th>
+                            <th width="160">Enviado por</th>
+                            <th width="160">Titulo</th>
+                            <th width="160">Data</th>
+                            <th width="180">Ações</th>
+                        </tr>';
+            $tfoot = '  <tr>
+                            <td>Código</td>
+                            <th>Enviado por</th>
+                            <td>Titulo</td>
+                            <td>Data</td>
+                            <td>Ações</td>
+                        </tr>';  
+
+                $tbody = '';
+                foreach ($orcamentos as $orcamento):
+
+                    $ativo = ($orcamento->getStatus() == status::ATIVO) ? 'selected="selected"' : '';
+                    $inativo = ($orcamento->getStatus() == status::INATIVO) ? 'selected="selected"' : '';
+
+            $tbody .='  <tr id="'.$orcamento->getId().'">
+                            <td>'.$orcamento->getCodigo().'</td>
+                            <td>'.$orcamento->getUsuarioCadastrado()->getFuncionario()->getNome().'</td>
+                            <td>'.$orcamento->getTitulo().'</td>
+                            <td>'.$dataFormat->formatar($orcamento->getData(),'datahora').'</td>
+                            <td>'
+                                .$this->templateFactory->getButton('visualizar',array('href'=>URL.'suprimentos/orcamentos/gerenciar/listarprodutosrequisitados/'.$orcamento->getId(), 'title'=>'Visualizar')).
+                                $this->templateFactory->getButton('Editar',array('href'=>URL.'suprimentos/orcamentos/gerenciar/editar/'.$orcamento->getId(), 'title'=>'Editar')).
+                                $this->templateFactory->getButton('orcar',array('id'=> $orcamento->getId(), URL.'suprimentos/orcamentos/gerenciar/orcar/', 'title'=>'Orçar')).
+                                $this->templateFactory->getButton('excluir', array('id'=> $orcamento->getId()), URL.'suprimentos/orcamentos/gerenciar/cancelar/').
+                            '</td>
+                        </tr>';
+                endforeach;
+                echo $this->templateFactory->getTable('tabela', array('thead'=>$thead, 'tfoot'=>$tfoot, 'tbody'=>$tbody));
+            ?>
+    </div>
+
+</div>
+<div class="modal fade" id="modalProdutosRequisitados">
+        <div class="modal-dialog animated zoomIn ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Lista De Produtos Requisitados</h4>
+                </div>
+                <div class="modal-body">
+                   
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+<script type="text/javascript">
+    $(function(){
+        //DATATABLE
+        var table = $('.dataTable').DataTable({
+            order: [0,'asc']
+        });
+
+        //EXCLUIR
+        table.$('.btn_cancelar').on('click',function(){
+            var id = $(this).attr('id');
+            var status = $(this).data('value');
+            var modalDelete = $('#modalDelete').modal('show')
+            $('.btn_ok','#modalDelete').on('click', function(event) {
+                $.post(url+'suprimentos/requisicoes/gerenciar/cancelar',{id:id,status:status},function(data){
+                    console.log(data)
+                    if(data == true){
+                        $('#modalDelete').modal('hide');
+                        $('tr#'+id).hide();
+                    }
+                });
+            });
+        });
+
+        table.$('.btn_visualizar').on('click',function(){
+            $('#modalProdutosRequisitados').modal('show');
+            
+            $.post($(this).attr('href'), {}, function(data, textStatus, xhr) {
+                $('#modalProdutosRequisitados .modal-body').html(data);
+            });
+
+
+            return false;
+        })
+
+    })
+</script>
+

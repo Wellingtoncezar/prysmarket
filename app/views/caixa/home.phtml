@@ -1,0 +1,20 @@
+<div class="container">
+    <?php
+        $btnCadastrar = $this->templateFactory->getButton("cadastrar",array('href'=>URL.'caixa/gerenciar/cadastrar'), URL.'caixa/gerenciar/cadastrar');
+        echo $this->templateFactory->getButton("actions_buttons",array('buttons'=>$btnCadastrar));
+    ?>
+    <div class="page-header">
+      <h1>Gestão <small>Caixa</small></h1>
+    </div>
+    <div class="middle-content">
+        
+        <div id="grid"></div><!--lista dos caixas-->
+        <div id="details"></div><!--lista dos caixas abertos-->
+        <div id="itens"></div><!-- lista dos produtos vendidos-->
+    </div>
+</div>
+
+<link rel="stylesheet" href="<?=URL?>skin/js/kendoui/css/kendo.common-material.min.css" />
+<link rel="stylesheet" href="<?=URL?>skin/js/kendoui/css/kendo.default.min.css" />
+<script src="<?=URL?>skin/js/kendoui/js/kendo.all.min.js"></script>
+<script type="text/javascript" src="<?=URL?>skin/js/caixas/caixa.js"></script>

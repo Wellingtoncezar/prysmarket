@@ -1,0 +1,76 @@
+<div class="container">
+    <?php
+
+        $btnCadastrar = $this->templateFactory->getButton("cadastrar",array('href'=>URL.'produtos/gerenciar/cadastrar'), URL.'produtos/gerenciar/cadastrar');
+        echo $this->templateFactory->getButton("actions_buttons",array('buttons'=>$btnCadastrar));
+    ?>
+    
+    <div class="page-header">
+      <h1>Produtos</h1>
+    </div>
+    <div class="middle-content">
+        <table class="dataTable rwd-table" cellspacing="0" width="100%" style="display:none">
+            <thead>
+                <tr>
+                    <th width="20">ID</th>
+                    <th width="40">GTI</th>
+                    <th width="40">Foto</th>
+                    <th width="160">Nome</th>
+                    <th width="160">Categoria</th>
+                    <th width="120">Marca</th>
+                    <th width="100">Status (Ativo/Inativo)</th>
+                    <th width="180">Ações</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>ID</th>
+                    <th>GTI</th>
+                    <th>Foto</th>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Marca</th>
+                    <th>Status (Ativo/Inativo)</th>
+                    <th>Ações</th>
+                </tr>
+            </tfoot>
+            <tbody>
+                <?php
+                foreach ($produtos as $prod):
+                    $foto = $prod->getFoto() != '' ? URL.'skin/uploads/produtos/p/'.$prod->getFoto() : URL.'skin/img/imagens/forn.jpg';
+                    $ativo = ($prod->getStatus() == status::ATIVO) ? 'selected="selected"' : '';
+                    $inativo = ($prod->getStatus() == status::INATIVO) ? 'selected="selected"' : '';
+                ?>    
+                    <tr id="<?=$prod->getId()?>">
+                        <td><?=$prod->getId()?></td>
+                        <td>
+                            <input type="hidden" id="<?=$prod->getId()?>" name="codigobarras" class="form-control " value="<?=$prod->getCodigoBarra()?>" maxlength="13" />
+                            <div class="demo-section k-content box-barcode-produto">
+                                <div id="barcode<?=$prod->getId()?>"></div>
+                            </div>
+                        </td>
+                        <td><img src="<?=$foto?>" style=" width: 60px; height: 60px;" class="img-circle"></td>
+                        <td><?=$prod->getNome()?></td>
+                        <td><?=$prod->getCategoria()->getNome()?></td>
+                        <td><?=$prod->getMarca()->getNome()?></td>
+                        <td>
+                            <select name="status" id="<?=$prod->getId()?>" class="statusSelect">
+                                <option value="<?=status::ATIVO?>" class="active" <?=$ativo?>>Ativo</option>
+                                <option value="<?=status::INATIVO?>" class="inactive" <?=$inativo?>>Inativo</option>
+                            </select>
+                        </td>
+                        <td>
+                            <?=$this->templateFactory->getButton('editar',array('href'=> URL.'produtos/gerenciar/editar/'.$prod->getId()), URL.'produtos/gerenciar/editar/')?>
+                            <?=$this->templateFactory->getButton('valores',array('href'=> URL.'produtos/gerenciar/precos/'.$prod->getId()), URL.'produtos/gerenciar/precos/')?>
+                            <?=$this->templateFactory->getButton('excluir', array('id'=> $prod->getId()), URL.'produtos/gerenciar/excluir/')?>
+                        </td>
+                    </tr>
+                <?php
+                endforeach;
+                ?>
+            </tbody>
+        </table>
+            
+
+    </div>
+<script type="text/javascript" src="<?=URL?>skin/js/produtos/produtos.js"></script>

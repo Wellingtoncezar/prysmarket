@@ -1,0 +1,37 @@
+<div class="container">
+    <?php $btnCadastrar = $this->templateFactory->getButton("cadastrar",array('href'=>URL.'agenda/gerenciar/cadastrar'));?>
+    <?= $this->templateFactory->getButton("actions_buttons",array('buttons'=>$btnCadastrar));?>
+
+    <div class="page-header">
+      <h1>Agenda de fornecedores</h1>
+    </div>
+    <div class="middle-content">
+        <div id="row" style="display: table;width: 100%;">
+            <div class="col-md-12" >
+                <div id="agendaFornecedores"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalAgenda" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Compromissos Agendados</h4>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<link href="<?=URL?>skin/js/bic_calendar/css/bic_calendar.css" rel="stylesheet">
+<script src="<?=URL?>skin/js/bic_calendar/js/bic_calendar.js"></script>
+<script src="<?=URL?>skin/js/agenda/agenda.js"></script>

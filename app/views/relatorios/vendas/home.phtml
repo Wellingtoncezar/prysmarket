@@ -1,0 +1,192 @@
+<div class="container">
+    <?php
+        //$btnCadastrar = $template->btnCadastrar(URL.'funcionarios/gerenciar/cadastrar');
+        //echo $template->actions_buttons($btnCadastrar);
+    ?>
+    <div class="page-header">
+      <h1>Relatórios <small>Vendas</small></h1>
+    </div>
+    <div class="middle-content">
+
+        <div>
+		  	<!-- Nav tabs -->
+		  	<ul class="nav nav-tabs" role="tablist">
+		    	<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Produtos mais vendidos</a></li>
+		  	</ul>
+
+		  	<!-- Tab panes -->
+		  	<div class="tab-content">
+		    	<div role="tabpanel" class="tab-pane active" id="home">
+		    		<div class="col-xs-12 col-sm-6 col-md-4 col-lg-2">
+			    		<div class="form-group">
+			    			<label>Período De:</label>
+		                    <input type="text" class="form-control" placeholder="De" name="de" value="01/<?=date('m/Y')?>">
+	                    
+			    		</div>
+			    	</div>
+			    	<div class="col-xs-12 col-sm-6 col-md-4 col-lg-2">
+			    		<div class="form-group">
+			    			<label>Até</label>
+							<input type="text" class="form-control" placeholder="Até" name="ate" value="31/<?=date('m/Y')?>">
+			    		</div>
+			    	</div>
+					
+			    	<div class="col-xs-12 col-sm-6 col-md-4 col-lg-12">
+			    		<div class="btn-group">
+			    			<button type="button" name="filtrar" class="btn btn-primary btnFiltrar">Filtrar</button>
+			    		</div>
+			    	</div>
+
+
+			    	<div class="col-xs-12 col-sm-6 col-md-4 col-lg-12">
+			    		<div class="demo-section k-content wide">
+					        <div id="chart" ></div>
+					    </div>
+					</div>
+		    	</div>
+
+		  	</div>
+
+		</div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+$(function(){
+	$( "input[name=de]" ).datepicker({
+        defaultDate: "+0w",
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true, 
+        changeYear: true,
+        yearRange: "-10:+0",
+        numberOfMonths: 2,
+        onClose: function( selectedDate ) {
+            $( "input[name=ate]" ).datepicker( "option", "minDate", selectedDate );
+        }
+    });
+    $( "input[name=ate]" ).datepicker({
+        defaultDate: "+0w",
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true, 
+        changeYear: true,
+        yearRange: "-10:+0", 
+        numberOfMonths: 2,
+        onClose: function( selectedDate ) {
+            $( "input[name=de]" ).datepicker( "option", "maxDate", selectedDate );
+        }
+    });
+
+    function updateChart()
+    {
+    	var dataDe = $( "input[name=de]" ).val();
+    	var dataAte = $( "input[name=ate]" ).val();
+    	var produto = $('select[name=produto]').val();
+
+    	$.ajax({
+    		url: url+'relatorios/vendas/gerenciar/consultaRelatorio',
+    		type: 'POST',
+    		dataType: 'json',
+    		data: {periodoDe: dataDe, periodoAte:dataAte, produto:produto},
+    	})
+    	.done(function(data) {
+    		console.log(data);
+    		var chart = $("#chart").data("kendoChart");
+			var dataSource = new kendo.data.DataSource( {
+			  data: data
+			  
+			});
+			chart.setDataSource(dataSource);
+    	})
+    	.fail(function(e) {
+    		$.notify({
+            	title: 'Atenção',
+            	icon: 'glyphicons glyphicons-warning-sign',
+				message: e.responseText,
+			},{
+				type: "warning",
+				placement: {
+					from: "top",
+					align: "right"
+				}
+			});
+    	});
+
+    }
+
+    updateChart();
+
+    $('.btnFiltrar').on('click', function(event) {
+    	event.preventDefault();
+    	updateChart()
+    });
+
+    function createChart() {
+        $("#chart").kendoChart({
+            title: { text: "Produtos mais vendidos" },
+            dataSource: {
+	            transport: {
+	                read: {
+	                    // url: function() {
+	                    //     return url+"relatorios/vendas/gerenciar/consultaRelatorio";
+	                    // },
+	                    dataType: "json"
+	                }
+	            },
+	            // group: {
+	            //     field: "symbol"
+	            // },
+
+	            sort: {
+	                field: "produto",
+	                dir: "asc"
+	            },
+
+	            schema: {
+	                model: {
+	                    fields: {
+	                        date: {
+	                            type: "qtdVenda"
+	                        }
+	                    }
+	                }
+	            }
+	        },
+            series: [{
+                type: "column",
+                field: "qtdVenda",
+                name: "Quantidade de vendas"
+            }],
+            legend: {
+                position: "bottom"
+            },
+            valueAxis: {
+                labels: {
+                    format: "{0} Venda(s)",
+                    // skip: 2,
+                    // step: 2
+                }
+            },
+            categoryAxis: {
+                field: "produto"
+            },
+//             categoryAxis: [{
+			//     categories: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+			// }],
+            tooltip: {
+	          visible: true,
+	          template: "Quant.: #= dataItem.qtdProduto # #=dataItem.unidadeMedida#<br> Média: #=dataItem.media# #=dataItem.unidadeMedida# / venda"
+	        }
+        });
+    }
+
+    $(document).ready(createChart);
+    $(document).bind("kendo:skinChange", createChart);
+
+})
+    </script>
+
+

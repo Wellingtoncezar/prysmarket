@@ -1,0 +1,102 @@
+<div class="container">
+    <div class="page-header">
+      <h1>Estoque - <small>Descartados</small></h1>
+    </div>
+    <div class="middle-content">
+		
+		<div id="grid"></div>
+		<div id="details"></div>
+		<div id="descartar"></div>
+        <div id="limites"></div>
+    </div>
+</div>
+
+
+<link rel="stylesheet" href="<?=URL?>skin/js/kendoui/css/kendo.common-material.min.css" />
+<link rel="stylesheet" href="<?=URL?>skin/js/kendoui/css/kendo.default.min.css" />
+<script src="<?=URL?>skin/js/kendoui/js/kendo.all.min.js"></script>
+<script type="text/javascript" src="<?=URL?>skin/js/uploadForm.js"></script>
+<script type="text/javascript" src="<?=URL?>skin/js/jquery.maskMoney.js"></script>
+
+
+<script type="text/x-kendo-template" id="template">
+    <div id="details-container">
+    	<form action="#=linkemprateleirar#" id="formTransferir" method="post">
+    		<input type="hidden" name="idEstoque" value="#= idEstoque #">
+    		<input type="hidden" name="idlote" value="#= id #">
+	        <input type="hidden" name="idUnidadeMedidaVenda" value="#= idUnidadeMedidaPraVenda #">
+	        <div class="input-group">
+			  	<input type="number" class="form-control" name="quantidade" value="0" min="0">
+			  	<span class="input-group-addon" id="basic-addon1">#=nomeUnidadeMedida#</span>
+			</div>
+			<div class="input-group">
+			  	<textarea class="form-control" name="observacoes" placeholder="Observações"></textarea>
+			</div>
+			<button type="submit" class="btn btn-success pull-rigth btnTrasferir">Transferir</button>
+    	</form>
+    </div>
+</script>
+
+
+<script type="text/x-kendo-descartar" id="descartar">
+    <div id="details-container">
+    	<form action="#=linkdescartar#" id="formDescartar" method="post">
+    		<input type="hidden" name="idEstoque" value="#= idEstoque #">
+    		<input type="hidden" name="idlote" value="#= id #">
+	        <input type="hidden" name="idUnidadeMedidaVenda" value="#= idUnidadeMedidaPraVenda #">
+	        <div class="input-group">
+			  	<input type="number" class="form-control" name="quantidade" value="0" min="0">
+			  	<span class="input-group-addon" id="basic-addon1">#=nomeUnidadeMedida#</span>
+			</div>
+			<div class="input-group">
+			  	<textarea class="form-control" name="observacoes" placeholder="Observações"></textarea>
+			</div>
+			<button type="submit" class="btn btn-success pull-rigth btnTrasferir">Transferir</button>
+    	</form>
+    </div>
+</script>
+
+<style>
+#gauge {
+    height: 300px;
+    display: inline-block;
+    display: inline;
+    zoom: 1;
+}
+</style>
+
+<!--MODAL DE ALTERAÇÃO DE LIMITES DE ESTOQUE-->
+<div class="modal fade" id="modalAlterLim">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="" id="formLimites" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Alterar limites de estoque</h4>
+                </div>
+                <div class="modal-body">
+	                <div class="row">
+						<div class="col-lg-8 limites" >
+							
+						</div>
+						<div class="col-lg-4">
+		                    <input type="hidden" name="idEstoque" value="">
+		                    <div class="input-group">
+		                        <span class="input-group-addon" id="basic-addon1">Min.</span>
+		                        <input type="number" class="form-control" name="qtdMin" value="" min="1">
+		                    </div>
+		                    <div class="input-group">
+		                        <span class="input-group-addon" id="basic-addon1">Max.</span>
+		                        <input type="number" class="form-control" name="qtdMax" value="" min="0">
+		                    </div>
+	    				</div>            
+	    			</div>
+	            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success pull-rigth btn_enviarAlteracaoLimites">Salvar</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript" src="<?=URL?>skin/js/estoque/descartados/descartados.js"></script>
