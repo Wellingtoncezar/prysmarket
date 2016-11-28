@@ -40,11 +40,7 @@ class gerenciar extends Controller{
 			'titlePage' => 'Relatórios'
 		);
 
-		$this->load->dao('produtos/produtosDao');
-		$produtosDao = new produtosDao();
-		$produtos = $produtosDao->listar();
-		
-		$data['produtos'] = $produtos;
+
 		$this->load->view('includes/header',$data);
 		$this->load->view('relatorios/vendas/home',$data);
 		$this->load->view('includes/footer',$data);
@@ -92,14 +88,14 @@ class gerenciar extends Controller{
 		foreach ($produtosMaisVendidos->getTipoRelatorio() as $produtoVendido)
 		{
 			$produtos = new produtosDao();
-			$produtosModel = $produtos->consultar(new consultaPorId(), $produtoVendido->getProdutosVendido()->getProduto(), array(status::ATIVO, status::INATIVO));
-			$produtoVendido->getProdutosVendido()->setProduto($produtosModel);
+			$produtosModel = $produtos->consultar(new consultaPorId(), $produtoVendido->consultar()->getProduto(), array(status::ATIVO, status::INATIVO));
+			$produtoVendido->consultar()->setProduto($produtosModel);
 
 			$aux = Array(
-				'produto' => $produtoVendido->getProdutosVendido()->getProduto()->getNome(),
+				'produto' => $produtoVendido->consultar()->getProduto()->getNome(),
 				'qtdVenda' => $produtoVendido->getQtdVendas(),
 				'qtdProduto' => $dataformat->formatar($produtoVendido->getQtdTotalProdutos(), 'decimalinteiro'),
-				'unidadeMedida' => $produtoVendido->getProdutosVendido()->getUnidadeMedidaVendido(),
+				'unidadeMedida' => $produtoVendido->consultar()->getUnidadeMedidaVendido(),
 				'media' => $dataformat->formatar(($produtoVendido->getQtdTotalProdutos() / $produtoVendido->getQtdVendas()), 'decimalinteiro')
 			);
 

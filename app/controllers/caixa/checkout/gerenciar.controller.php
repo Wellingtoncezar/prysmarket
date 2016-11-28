@@ -6,6 +6,28 @@ if(!defined('BASEPATH')) die('Acesso não permitido');
 class gerenciar extends Controller{
 	public function __construct(){
 		parent::__construct();
+		$this->load->dao('estoque/estoqueDao');
+		$this->load->dao('estoque/iListagemEstoque');
+		$this->load->dao('estoque/listarPrateleira');
+		$this->load->dao('produtos/produtosDao');
+		$this->load->dao('caixa/caixasDao');
+		$this->load->model('caixa/caixasModel');
+		$this->load->dao('caixa/iConsultaCaixa');
+		$this->load->dao('caixa/consultaPorIp');
+		$this->load->dao('caixa/caixasDao');
+		$this->load->model('caixa/caixaAbertoModel');
+		$this->load->model('caixa/vendasModel');
+		$this->load->dao('caixa/caixasDao');
+		$this->load->model('produtos/produtosModel');
+		$this->load->model('produtos/precosModel');
+		$this->load->dao('produtos/IConsultaProduto');
+		$this->load->dao('produtos/consultaPorId');
+		$this->load->dao('produtos/consultaPorCodigoBarras');
+		$this->load->dao('produtos/precosDao');
+		$this->load->model('caixa/produtosVendidoModel');
+		$this->load->model('produtos/unidadeMedidaEstoqueModel');
+		$this->load->model('produtos/unidadeMedidaModel');
+
 	}
 
 
@@ -29,13 +51,11 @@ class gerenciar extends Controller{
 			'usuario' => unserialize($_SESSION['user'])
 		);
 
-		$this->load->dao('produtos/produtosDao');
+		
 		$produtosDao = new produtosDao();
 		$produtos = $produtosDao->listarAtivos();
 
-		$this->load->dao('estoque/estoqueDao');
-		$this->load->dao('estoque/iListagemEstoque');
-		$this->load->dao('estoque/listarPrateleira');
+		
 		$estoqueDao = new estoqueDao();
 		$estoque = $estoqueDao->listar(new listarPrateleira());
 
@@ -57,10 +77,7 @@ class gerenciar extends Controller{
 			$this->http->response("Você não tem permissão para realizar esta ação");
 			return false;
 		}
-		$this->load->dao('caixa/caixasDao');
-		$this->load->model('caixa/caixasModel');
-		$this->load->dao('caixa/iConsultaCaixa');
-		$this->load->dao('caixa/consultaPorIp');
+		
 
 		//obtendo o ip da maquina
 		$ip = '';
@@ -120,10 +137,7 @@ class gerenciar extends Controller{
 			if ($dataValidator->validate())
 			{
 
-				$this->load->dao('caixa/caixasDao');
-				$this->load->model('caixa/caixaAbertoModel');
-				$this->load->model('caixa/caixasModel');
-				$this->load->model('caixa/vendasModel');
+				
 				$vendasModel = new vendasModel();
 
 				$caixaAbertoModel = new caixaAbertoModel();
@@ -175,10 +189,7 @@ class gerenciar extends Controller{
 			$dataValidator->set('Número', $saldofinal, 'saldofinal')->is_required();
 			if ($dataValidator->validate())
 			{
-				$this->load->dao('caixa/caixasDao');
-				$this->load->model('caixa/caixaAbertoModel');
-				$this->load->model('caixa/caixasModel');
-				$this->load->model('caixa/vendasModel');
+				
 
 				//obtendo os dados do caixa da sessão
 				$caixa = unserialize($_SESSION['caixa']);
@@ -205,13 +216,7 @@ class gerenciar extends Controller{
 
 	public function consultaProduto()
 	{
-		$this->load->model('produtos/produtosModel');
-		$this->load->model('produtos/precosModel');
-		$this->load->dao('produtos/produtosDao');
-		$this->load->dao('produtos/IConsultaProduto');
-		$this->load->dao('produtos/consultaPorId');
-		$this->load->dao('produtos/consultaPorCodigoBarras');
-		$this->load->dao('produtos/precosDao');
+		
 
 		$tipo = $this->http->getRequest('tipo');
 		$value = $this->http->getRequest('value');
@@ -239,9 +244,14 @@ class gerenciar extends Controller{
 			$produto = $produtos->consultar(new consultaPorCodigoBarras(), $produtosModel, $status);
 		}
 
-		if($produto != null){
+
+		if($produto != null)
+		{
+			$precosModel = new precosModel();
+			$precosModel->setProduto($produto);
+
 			$precos = new precosDao();
-			$precosModel = $precos->consultarPrecoVenda($produto);
+			$precosModel = $precos->consultarPrecoVenda($precosModel);
 			$produto->addPreco($precosModel);
 			$this->http->response($this->getJson($produto));
 		}else
@@ -271,16 +281,6 @@ class gerenciar extends Controller{
 
 	public function addProdutoListaVenda()
 	{
-		//carregamento das classes dependentes
-		$this->load->dao('produtos/IConsultaProduto');
-		$this->load->dao('produtos/consultaPorId');
-		$this->load->dao('produtos/produtosDao');
-		$this->load->dao('produtos/precosDao');
-		$this->load->model('produtos/produtosModel');
-		$this->load->model('caixa/produtosVendidoModel');
-		$this->load->model('caixa/vendasModel');
-		$this->load->model('caixa/caixaAbertoModel');
-		$this->load->model('caixa/caixasModel');
 
 		//Obtendo os dados de entrada
 		$dataformat = new dataformat();
@@ -293,14 +293,18 @@ class gerenciar extends Controller{
 		//obtendo os dados do produto
 		$produtosDao = new produtosDao();
 		$produtosModel = $produtosDao->consultar(new consultaPorId(), $produtosModel, array(status::ATIVO));
-		
+		$produtosDao->consultaUnidadesMedida($produtosModel);
+
 		$produtosVendidoModel = new produtosVendidoModel();
 		$produtosVendidoModel->setProduto($produtosModel);
 		$produtosVendidoModel->setQuantidade($quantidade);
 
+		$precosModel = new precosModel();
+		$precosModel->setProduto($produtosModel);
+
 		//Obtendo o preço de venda
 		$precosDao = new precosDao();
-		$produtosVendidoModel->setPrecoVendido($precosDao->consultarPrecoVenda($produtosModel)->getPreco());
+		$produtosVendidoModel->setPrecoVendido($precosDao->consultarPrecoVenda($precosModel)->getPreco());
 
 		//Adicionando o produto na venda
 		$caixa = unserialize($_SESSION['caixa']);
@@ -316,14 +320,6 @@ class gerenciar extends Controller{
 	 * */
 	public function listarCarrinho()
 	{
-		$this->load->model('produtos/produtosModel');
-		$this->load->model('produtos/unidadeMedidaEstoqueModel');
-		$this->load->model('produtos/unidadeMedidaModel');
-		$this->load->model('caixa/produtosVendidoModel');
-		$this->load->model('caixa/vendasModel');
-		$this->load->model('caixa/caixaAbertoModel');
-		$this->load->model('caixa/caixasModel');
-
 		$dataformat = new dataformat();
 		$caixa = unserialize($_SESSION['caixa']);
 		$produtosVendidos = $caixa->getCaixaAberto()[0]->getVendas()[0]->getProdutosVendidos();
@@ -344,12 +340,6 @@ class gerenciar extends Controller{
 
 	public function consultaSubtotalCarrinho()
 	{
-		$this->load->model('produtos/produtosModel');
-		$this->load->model('caixa/produtosVendidoModel');
-		$this->load->model('caixa/vendasModel');
-		$this->load->model('caixa/caixaAbertoModel');
-		$this->load->model('caixa/caixasModel');
-
 		$dataformat = new dataformat();
 		$caixa = unserialize($_SESSION['caixa']);
 		$produtosVendidos = $caixa->getCaixaAberto()[0]->getVendas()[0]->getProdutosVendidos();
@@ -377,21 +367,13 @@ class gerenciar extends Controller{
 			$this->load->library('dataValidator');
 			$dataValidator = new dataValidator();
 
-			$this->load->model('produtos/produtosModel');
-			$this->load->model('caixa/produtosVendidoModel');
-			$this->load->model('caixa/vendasModel');
-			$this->load->model('caixa/caixaAbertoModel');
-			$this->load->model('caixa/caixasModel');
-			$this->load->dao('caixa/caixasDao');
-
-
 			$formapagamento = $this->http->getRequest('formapagamento');
 
 			$valorrecebido = $dataformat->formatar($this->http->getRequest('valorrecebido'),'decimal', 'banco');
 			
 
 			if($formapagamento == formapagamento::DINHEIRO){
-				$dataValidator->set('Valor recebido', $valorrecebido, 'valorrecebido')->is_required();
+				$dataValidator->set('Valor recebido', $valorrecebido, 'valorrecebido')->is_required()->is_positive();
 			}
 			
 			//validando os dados de entrada

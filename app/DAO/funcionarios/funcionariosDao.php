@@ -61,8 +61,6 @@ class funcionariosDao extends Dao{
 
 		//FUNCIONARIO
 		if($result != null):
-
-						
 			$this->load->model('enderecoModel');
 			$endereco = new enderecoModel();
 			$endereco->setId($result['id_endereco']);

@@ -147,7 +147,7 @@ class produtosDao extends Dao{
 	}
 
 
-	private function consultaUnidadesMedida(produtosModel $produto)
+	public function consultaUnidadesMedida(produtosModel $produto)
 	{
 		$this->db->clear();
 		$this->db->setTabela('unidade_medida as A, unidade_medida_produto AS B');

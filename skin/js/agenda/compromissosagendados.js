@@ -2,11 +2,12 @@ $(function(){
     $('.dataTable').show()
     
     // //DATATABLE
-    var table = $('.dataTable').DataTable({
-        order: [0,'asc']
-    });
+    // var table = $('.dataTable').DataTable({
+    //     order: [0,'asc']
+    // });
     //ADIAR
-    table.$(' .btn_adiar').on('click',function(){
+    // table.
+    $(' .btn_adiar').on('click',function(){
         var id = $(this).attr('iddata')
         if($(this).hasAttr('habilitar')){
             $('input[iddata='+id+']').prop('disabled',false)

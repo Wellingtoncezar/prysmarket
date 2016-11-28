@@ -6,6 +6,18 @@ if(!defined('BASEPATH')) die('Acesso não permitido');
 class gerenciar extends Controller{
 	public function __construct(){
 		parent::__construct();
+
+		$this->load->model('estoque/estoqueModel');
+		$this->load->model('estoque/lotesModel');
+		$this->load->model('estoque/localizacaoLoteModel');
+		$this->load->model('produtos/unidadeMedidaEstoqueModel');
+		$this->load->model('estoque/nivelEstoqueModel');
+		$this->load->dao('estoque/estoqueDao');
+		$this->load->dao('produtos/produtosDao');
+		$this->load->dao('estoque/iListagemEstoque');
+		$this->load->dao('estoque/listarArmazem');
+		$this->load->library('dataValidator');
+
 	}
 
 
@@ -39,7 +51,7 @@ class gerenciar extends Controller{
 			'titlePage' => 'Entrada no Armazém - Estoque'
 		);
 
-		$this->load->dao('produtos/produtosDao');
+		
 		$produtosDao = new produtosDao();
 		$produtos = $produtosDao->listarAtivos();
 		$data['produtos'] = $produtos;
@@ -51,9 +63,6 @@ class gerenciar extends Controller{
 
 	public function getjsonlote()
 	{
-		$this->load->dao('estoque/estoqueDao');
-		$this->load->dao('estoque/iListagemEstoque');
-		$this->load->dao('estoque/listarArmazem');
 		$estoqueDao = new estoqueDao();
 		$estoque = $estoqueDao->listar(new listarArmazem());
 		$this->http->response($this->getJsonEstoque($estoque));
@@ -125,12 +134,7 @@ class gerenciar extends Controller{
 	//trasferencia de lotes para a prateleira
 	public function emprateleirar()
 	{
-		$this->load->model('estoque/estoqueModel');
-		$this->load->model('estoque/lotesModel');
-		$this->load->model('estoque/localizacaoLoteModel');
-		$this->load->model('produtos/unidadeMedidaEstoqueModel');
-		$this->load->dao('estoque/estoqueDao');
-		$this->load->library('dataValidator');
+		
 
 		$idEstoque				= (int) $this->http->getRequest('idEstoque');
 		$idlote 				= (int) $this->http->getRequest('idlote');
@@ -174,7 +178,7 @@ class gerenciar extends Controller{
 			}else
 			{
 				if(!$estoqueDao->verificaQuantidadeTransferencia($estoqueModel, localizacoes::ARMAZEM)){
-					$mensagem = "Quantidade insuficiente para realizar a transferência ";
+					$mensagem = "Quantidade insuficiente para realizar a transferência";
 					$this->http->response($mensagem);
 				}else{
 					$this->http->response($estoqueDao->transferir($estoqueModel, localizacoes::ARMAZEM));
@@ -195,10 +199,7 @@ class gerenciar extends Controller{
 	*/
 	public function limitar()
 	{
-		$this->load->dao('estoque/estoqueDao');
-		$this->load->model('estoque/estoqueModel');
-		$this->load->model('estoque/nivelEstoqueModel');
-		
+	
 		$this->load->library('dataformat');
 		$dataformat = new dataformat();
 		$idEstoque 	= (int) $this->http->getRequest('idEstoque');
@@ -234,61 +235,94 @@ class gerenciar extends Controller{
 
 	public function descartar()
 	{
-		$this->load->model('estoque/estoqueModel');
-		$this->load->model('estoque/lotesModel');
-		$this->load->model('estoque/localizacaoLoteModel');
-		$this->load->model('produtos/unidadeMedidaEstoqueModel');
-		$this->load->dao('estoque/estoqueDao');
-		$this->load->library('dataValidator');
+		try{
 
-		$idEstoque				= (int) $this->http->getRequest('idEstoque');
-		$idlote 				= (int) $this->http->getRequest('idlote');
-		$idUnidadeMedidaVenda  	= (int) $this->http->getRequest('idUnidadeMedidaVenda');
-		$quantidade 			= (double) $this->http->getRequest('quantidade');
-		$observacoes 			= $this->http->getRequest('observacoes');
-		
-		//validação dos dados
-		$dataValidator= new dataValidator();
-		$dataValidator->set('Quantidade', $quantidade, 'quantidade')->is_required()->is_num();
-		if ($dataValidator->validate())
-		{
-			//UNIDADE MEDIDA ESTOQUE MODEL
-			$unidadeMedidaEstoqueModel = new unidadeMedidaEstoqueModel();
-			$unidadeMedidaEstoqueModel->setId($idUnidadeMedidaVenda);
-
-			//LOCALIZACAO LOTE MODEL
-			$localizacaoLoteModel = new localizacaoLoteModel();
-			$localizacaoLoteModel->setUnidadeMedidaEstoque($unidadeMedidaEstoqueModel);
-			$localizacaoLoteModel->setQuantidade($quantidade);
-			$localizacaoLoteModel->setObservacoes($observacoes);
-			$localizacaoLoteModel->descartar();
-
-			//LOTES MODEL
-			$lotesModel = new lotesModel();
-			$lotesModel->setId($idlote);
-			$lotesModel->addLocalizacao($localizacaoLoteModel);
-
-			//ESTOQUE MODEL
-			$estoqueModel = new estoqueModel();
-			$estoqueModel->setId($idEstoque);
-			$estoqueModel->addLote($lotesModel);
-
-			//ESTOQUE DAO
-			$estoqueDao = new estoqueDao();	
-			$lotePertoVencer = $estoqueDao->verificaDataValidade($estoqueModel);
+			$idEstoque				= (int) $this->http->getRequest('idEstoque');
+			$idlote 				= (int) $this->http->getRequest('idlote');
+			$idUnidadeMedidaVenda  	= (int) $this->http->getRequest('idUnidadeMedidaVenda');
+			$quantidade 			= (double) $this->http->getRequest('quantidade');
+			$observacoes 			= $this->http->getRequest('observacoes');
 			
-			if(!$estoqueDao->verificaQuantidadeTransferencia($estoqueModel, localizacoes::ARMAZEM)){
-				$mensagem = "Quantidade insuficiente para realizar o descarte";
-				$this->http->response($mensagem);
-			}else{
-				$this->http->response($estoqueDao->transferir($estoqueModel, localizacoes::ARMAZEM));
-			}
-		}else
-	    {
-			$todos_erros = $dataValidator->get_errors();
-			$this->http->response(json_encode($todos_erros));
-	    }
+			//validação dos dados
+			$dataValidator= new dataValidator();
+			$dataValidator->set('Quantidade', $quantidade, 'quantidade')->is_required()->is_num();
+			if ($dataValidator->validate())
+			{
+				//UNIDADE MEDIDA ESTOQUE MODEL
+				$unidadeMedidaEstoqueModel = new unidadeMedidaEstoqueModel();
+				$unidadeMedidaEstoqueModel->setId($idUnidadeMedidaVenda);
+
+				//LOCALIZACAO LOTE MODEL
+				$localizacaoLoteModel = new localizacaoLoteModel();
+				$localizacaoLoteModel->setUnidadeMedidaEstoque($unidadeMedidaEstoqueModel);
+				$localizacaoLoteModel->setQuantidade($quantidade);
+				$localizacaoLoteModel->setObservacoes($observacoes);
+				$localizacaoLoteModel->descartar();
+
+				//LOTES MODEL
+				$lotesModel = new lotesModel();
+				$lotesModel->setId($idlote);
+				$lotesModel->addLocalizacao($localizacaoLoteModel);
+
+				//ESTOQUE MODEL
+				$estoqueModel = new estoqueModel();
+				$estoqueModel->setId($idEstoque);
+				$estoqueModel->addLote($lotesModel);
+
+				//ESTOQUE DAO
+				$estoqueDao = new estoqueDao();	
+				$lotePertoVencer = $estoqueDao->verificaDataValidade($estoqueModel);
+				
+				if(!$estoqueDao->verificaQuantidadeTransferencia($estoqueModel, localizacoes::ARMAZEM)){
+					$mensagem = "Quantidade insuficiente para realizar o descarte";
+					$this->http->response($mensagem);
+				}else{
+					$usuario = unserialize($_SESSION['user']);
+					$estoqueDao->transferir($estoqueModel, localizacoes::ARMAZEM);
+					$estoqueDao->registraLogTransferencia($estoqueModel, $usuario);
+					$this->http->response(true);
+				}
+			}else
+		    {
+				$todos_erros = $dataValidator->get_errors();
+				$this->http->response(json_encode($todos_erros));
+		    }
+		}catch(dbException $e){
+			$this->http->response($e->getMessageError());
+		}
 	}
+
+
+	public function listarEstoqueBaixo()
+	{
+		$estoqueDao = new estoqueDao();
+		$estoque = $estoqueDao->listar(new listarArmazem());
+		$prod = '';
+		$corpomensagem = '';
+		foreach ($estoque as $est){
+			if($est->getQuantidadeTotal() < $est->getNivelEstoque()->getQuantidadeMinima())
+			{
+				$corpomensagem .= '
+					<p><strong>Produto:<strong>'.$est->getProduto()->getNome().' | Qtd.: '.$est->getQuantidadeTotal().' '.$est->getProduto()->getUnidadeMedidaParaEstoque()->getUnidadeMedida()->getNome().'</p>
+				';
+			}
+		}
+
+
+
+
+		//obtendo o corpo do email
+		$templateFactory = new templateFactory();
+		$corpoEmail = $templateFactory->getEmail("emailPadrao", array('assunto'=>'Produtos com estoque baixo', 'mensagem' => $corpomensagem) );
+
+		//enviando os emails
+		$sendMail = new sendMail();
+		
+		//email do sistema
+		$sendMail->send('wellington-cezar@hotmail.com', 'Produtos com estoque baixo', $corpoEmail);//
+	}
+
+
 
 }
 

@@ -35,8 +35,6 @@ $(document).ready(function() {
             $('#modalAgenda').modal('show')
         })
     });
-
-    
 });
 
    

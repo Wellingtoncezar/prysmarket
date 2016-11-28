@@ -526,7 +526,7 @@ class gerenciar extends Controller{
 		$saveRouter = new saveRouter;
 		$saveRouter->saveModule();
 		$saveRouter->saveAction();
-
+		
 		if(!$this->load->checkPermissao->check(false,URL.'funcionarios/gerenciar/excluir'))
 		{
 			$this->http->response("Ação não permitida");

@@ -1,4 +1,22 @@
+<div class="container">
+    <?php
+       $btnVoltar = $this->templateFactory->getButton("voltar",array('href'=>URL.'caixa'));
+        echo $this->templateFactory->getButton("actions_buttons",array('buttons'=>$btnVoltar));    ?>
+    <div class="page-header">
+      <h1>Caixas<small> Vendas realizadas</small></h1>
+    </div>
+    <section>
+    	<div id="grid"></div>
+
+    </section>
+</div>
+
+<script type="text/javascript" src="<?=URL?>skin/js/uploadForm.js"></script>
+
+<script type="text/javascript">
 $(function(){
+
+	
 
 $("#grid").kendoGrid({
     columns: [
@@ -10,24 +28,24 @@ $("#grid").kendoGrid({
         template: '<p>#: id#</p>'
     },
     {
-        field: "codigo",
-        title: "Código",
+        field: "data",
+        title: "Data",
         width: "300px",
     },
     {
-        field: "ip",
-        title: "IP",
+        field: "total",
+        title: "Total",
         width: "100px"
-    },
-    {
-        filterable: false,
-        field: "acoes",
-        title: "Ações",
-        width: "100px",
-        template : '<a class="btn btn-primary btn_editar btn-sm pull-left" href="#:linkEditar#" data-toggle="tooltip" data-placement="top" role="button" id-record=""  title="">'
-                +'<span class="glyphicon glyphicon-pencil"></span>' 
-            +'</a>'
     }
+    // {
+    //     filterable: false,
+    //     field: "acoes",
+    //     title: "Ações",
+    //     width: "100px",
+    //     template : '<a class="btn btn-primary btn_editar btn-sm pull-left" href="#:linkEditar#" data-toggle="tooltip" data-placement="top" role="button" id-record=""  title="">'
+		  //               +'<span class="glyphicon glyphicon-pencil"></span>' 
+		  //           +'</a>'
+    // }
     ],
     filterable: {
         extra: false,
@@ -48,7 +66,7 @@ $("#grid").kendoGrid({
     dataSource:{
         transport: {
             read: {
-                url: url+"caixa/gerenciar/getjsoncaixa",
+                // url: url+"caixa/gerenciar/getjsonvenda",
                 dataType: "json"
             }
         }
@@ -107,5 +125,13 @@ $("#grid").kendoGrid({
 });
 
 
-
+var chart = $("#grid").data("kendoGrid");
+	var dataSource = new kendo.data.DataSource( {
+	  data: [{
+	  		'id':10,
+	  		'data':'teste'
+	  }]
+	});
+	chart.setDataSource(dataSource);
 })
+</script>

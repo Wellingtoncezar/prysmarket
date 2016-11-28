@@ -5,6 +5,7 @@ class templateFactory extends Library{
 	public function getButton($button, $atr, $checkPermission = '') 
 	{
 		//se não tiver permissão de acesso ao botão retorna null
+		// return $this->load->checkPermissao->check(false, $checkPermission);
 		if($checkPermission != '' && $this->load->checkPermissao->check(false, $checkPermission) == false )//verifica a permissão de acesso
 			return null;
 		$load = new loadContent();

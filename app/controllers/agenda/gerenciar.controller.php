@@ -95,6 +95,42 @@ class gerenciar extends Controller{
 
 	
 
+	public function listarAgendaMes()
+	{
+		$ano = date('Y');
+		$mes = date('m');
+		if($ano !=  0)
+		{
+			$agendaList = array();
+
+			//AGENDA DAO
+			$this->load->dao('agendas/agendaDao');
+			$agendaDao = new agendaDao();
+			$agendas = $agendaDao->listar($ano, $mes);
+
+			//FORMATAÇÃO DOS DADOS
+			$this->load->library('dataFormat', null, true);
+			foreach ($agendas as $agenda) 
+			{
+				list ($ano,$mes,$dia) = explode('-', $agenda->getData());
+				
+				$aux = array(
+					'date' => $this->formatarData($agenda->getData()),
+					'title' => 'teste',
+					'link' => '',//URL.'agenda/gerenciar/listarCompromissosAgendados/'.$dia.'/'.$mes.'/'.$ano,
+					'color' => 'green'
+				);
+				array_push($agendaList, $aux);
+				//unset($aux);
+			}
+
+			echo json_encode($agendaList);
+		}else
+			echo json_encode(array());
+
+		//echo '[{"date":"2\/2\/2015","title":"Getting Contacts Barcelona - test1","link":"http:\/\/gettingcontacts.com\/events\/view\/barcelona","color":"red"}]';
+	}
+
 
 
 	/*----------------------------

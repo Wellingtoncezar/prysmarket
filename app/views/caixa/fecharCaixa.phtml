@@ -1,0 +1,19 @@
+<div class="container">
+    <?php
+       $btnVoltar = $this->templateFactory->getButton("voltar",array('href'=>URL.'caixa'));
+        echo $this->templateFactory->getButton("actions_buttons",array('buttons'=>$btnVoltar));    ?>
+    <div class="page-header">
+      <h1>Caixas<small> Fechamento</small></h1>
+    </div>
+    <form class="form" action="<?=URL?>caixa/gerenciar/fecharcaixa" id="form_fecharCaixa">
+		<div class="form-group">
+		    <label>Saldo Final em caixa</label>
+		    <input type="text" class="form-control" placeholder="Saldo" name="saldofinal">
+		</div>
+		<input type="hidden" name="id_abertura_caixa" value="<?=$id_aberturaCaixa?>">
+		<button type="submit" class="btn btn-primary pull-right">Fechar caixa</button>
+	</form>
+</div>
+
+<script type="text/javascript" src="<?=URL?>skin/js/uploadForm.js"></script>
+<script type="text/javascript" src="<?=URL?>skin/js/caixas/fechamento.js"></script>

@@ -24,7 +24,6 @@ class RelatoriosModel{
 		return $this->periodo_de;
 	}
 
-
 	public function setPeriodoAte($periodo_ate){
 		$this->periodo_ate = $periodo_ate;
 	}

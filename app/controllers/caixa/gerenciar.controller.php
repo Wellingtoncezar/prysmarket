@@ -94,6 +94,22 @@ class gerenciar extends Controller{
 	}
 
 
+	public function visualizar()
+	{
+		$saveRouter = new saveRouter;
+		$saveRouter->saveModule();
+		$saveRouter->saveAction();
+		$this->load->checkPermissao->check();
+
+		$data = array(
+			'titlePage' => 'Visualizar vendas'
+		);
+		$this->load->view('includes/header',$data);
+		$this->load->view('caixa/visualizar',$data);
+		$this->load->view('includes/footer',$data);
+	}
+
+
 	/*----------------------------
 	- AÇÕES
 	=============================*/
@@ -282,7 +298,8 @@ class gerenciar extends Controller{
 							'dateClose' => $dataformat->formatar($OpenBox->getDataFechamento(),'datahora'),
 							'user' => html_entity_decode($OpenBox->getUsuario()->getFuncionario()->getNome().' '.$OpenBox->getUsuario()->getFuncionario()->getSobreNome()),
 							'acoes' => "",
-							'linkvisualizar' => '',
+							'linkvisualizar' => URL.'caixa/gerenciar/visualizar/'.$OpenBox->getId(),
+							'linkFechar'=> URL.'caixa/gerenciar/fecharCheckout/'.$OpenBox->getId(),
 							'itens' => array()
 							
 				    	);
@@ -295,6 +312,80 @@ class gerenciar extends Controller{
 
         $this->http->response(json_encode($_arCaixa));
 	}
+
+
+	public function fecharCheckout()
+	{
+
+		$saveRouter = new saveRouter;
+		$saveRouter->saveModule();
+		$saveRouter->saveAction();
+		$this->load->checkPermissao->check();
+
+		$data = array(
+			'titlePage' => 'Editar caixa'
+		);
+		$idAberturaCaixa = intval($this->load->url->getSegment(3));
+		
+		$data['id_aberturaCaixa'] = $idAberturaCaixa;
+		
+
+		$this->load->view('includes/header',$data);
+		$this->load->view('caixa/fecharCaixa',$data);
+		$this->load->view('includes/footer',$data);
+	}
+
+
+
+	public function fecharcaixa()
+	{
+		try{
+			//verificação de permissão de acesso
+			if(!$this->load->checkPermissao->check(false,URL.'caixa/checkout/gerenciar'))
+			{
+				$this->http->response("Você não tem permissão para fechar o caixa");
+				return false;
+			}
+
+			//OBTENDO OS DADOS
+			$dataformat = new dataformat();
+			$saldofinal = $dataformat->formatar($this->http->getRequest('saldofinal'), 'decimal', 'banco');
+			$id_aberturaCaixa = $this->http->getRequest('id_abertura_caixa');
+
+			//VALIDANDO OS DADOS
+			$this->load->library('dataValidator');
+			$dataValidator = new dataValidator();
+			$dataValidator->set('Número', $saldofinal, 'saldofinal')->is_required();
+			if ($dataValidator->validate())
+			{
+				$this->load->dao('caixa/caixasDao');
+				$this->load->model('caixa/caixaAbertoModel');
+				$this->load->model('caixa/caixasModel');
+				$this->load->model('caixa/vendasModel');
+
+				//obtendo os dados do caixa da sessão
+				$caixaAbertoModel = new caixaAbertoModel();
+				$caixaAbertoModel->setId($id_aberturaCaixa);
+				$caixaAbertoModel->setSaldoFinal($saldofinal);
+				$caixaAbertoModel->setDataFechamento(date('Y-m-d H:i:s'));
+
+				$caixa = new caixasModel();
+				$caixa->addCaixaAberto($caixaAbertoModel);
+
+				$caixasDao = new caixasDao();
+				$res = $caixasDao->fecharCaixa($caixa);
+
+				$this->http->response($res);
+			}else
+			{
+				$this->http->response('Informe o saldo final em caixa', 400);
+			}	
+		} catch (dbException $e) {
+			$this->http->response($e->getMessageError(), 400);
+		}
+	}
+
+
 }
 
 /**

@@ -508,20 +508,40 @@ $(function(){
 	});
 
 
+	//calculo do troco
 	$('input[name=valorrecebido]').bind('change paste keyup', function(event) {
 		var qtd = $(this).val();
 		qtd = qtd.replace(".","");
         qtd = qtd.replace(",",".");
         qtd = parseFloat(qtd);
 		var subtotal = qtd - $('input[name=subtotal]').val();
-
+		$('input[name=troco]').val(subtotal);
 		subtotal = subtotal.formatMoney(2, ',', '.');
 		$('#troco').html('R$ '+subtotal);
 	});
 
+	//finalizacao da compra
 	$('.btnFinalizar').on('click', function(event) {
 		event.preventDefault();
 		var valorrecebido = $('input[name=valorrecebido]').val();
+		var troco = $('input[name=troco]').val()
+
+
+		if(formapagamento == 'DINHEIRO' && troco < 0)
+		{
+			$.notify({
+            	icon: 'glyphicons glyphicons-alert',
+				message: 'Pagamento insuficiente',
+			},{
+				type: "warning",
+				placement: {
+					from: "top",
+					align: "right"
+				}
+			});
+			return false;
+		}
+
 
 		$.ajax({
 			url: url+'caixa/checkout/gerenciar/finalizarCompra',
@@ -571,6 +591,8 @@ $(function(){
 		$('.containerProdutos').removeClass('hide');
 		$('.containerProdutoUnitario').addClass('hide');
 		$('.containerFinalizarCompra').addClass('hide');
+
+		$('#subtotal').html('')
 	}
 
 

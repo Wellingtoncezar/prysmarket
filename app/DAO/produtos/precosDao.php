@@ -14,7 +14,7 @@ class precosDao extends Dao{
 	 * Lista os registros dos produtos
 	 * @return Array
 	 */
-	public function listar(produtosModel $produto)
+	public function listar(precosModel $preco)
 	{
 		$this->load->model('produtos/precosModel');
 		$precos = Array();
@@ -22,7 +22,7 @@ class precosDao extends Dao{
 		$this->db->clear();
 		$this->db->setTabela('produtos_preco');
 		$this->db->setCondicao("id_produto = ?");
-		$this->db->setParameter(1, $produto->getId());
+		$this->db->setParameter(1, $preco->getProduto()->getId());
 		$this->db->select();
 		if($this->db->rowCount() > 0):
 			$result = $this->db->resultAll();
@@ -45,42 +45,43 @@ class precosDao extends Dao{
 	}
 
 
-	public function consultar(produtosModel $produto )
+	public function consultar(precosModel $preco)
 	{
-		// $this->load->model('produtos/precosModel');
-		// $precos = Array();
+		$this->load->model('produtos/precosModel');
+		$precos = Array();
 
-		// $this->db->clear();
-		// $this->db->setTabela('produtos_preco');
-		// $this->db->setCondicao("id_produto = ?");
-		// $this->db->setParameter(1, $produto->getId());
-		// $this->db->select();
-		// if($this->db->rowCount() > 0):
-		// 	$result = $this->db->resultAll();
-		// 	foreach ($result as $value)
-		// 	{
-		// 		$precosModel = new precosModel();
-		// 		$precosModel->setId($value['id_produto_preco']);
-		// 		$precosModel->setPreco($value['preco_produto']);
-		// 		$precosModel->setDataInicio($value['data_inicio']);
-		// 		$precosModel->setDataFim($value['data_fim']);
-		// 		$precosModel->setPadrao($value['preco_padrao']);
-		// 		$precosModel->setDataCadastro($value['data_cadastro']);
+		$this->db->clear();
+		$this->db->setTabela('produtos_preco');
+		$this->db->setCondicao("id_produto_preco = ?");
+		$this->db->setParameter(1, $preco->getId());
+		$this->db->select();
+		if($this->db->rowCount() > 0):
+			$result = $this->db->result();
+			$preco->setId($result['id_produto_preco']);
+			$preco->setPreco($result['preco_produto']);
+			$preco->setDataInicio($result['data_inicio']);
+			$preco->setDataFim($result['data_fim']);
+			$preco->setPadrao($result['preco_padrao']);
+			$preco->setDataCadastro($result['data_cadastro']);
 
-		// 		array_push($precos, $precosModel);
-		// 		unset($precosModel);
-		// 	}
-		// endif;
+			$produto = new produtosModel();
+			$produto->setId($result['id_produto']);
+			$preco->setProduto($produto);
+			return $preco;
+		else:
+			return null;
+		endif;
 		
-		// return $precos;
 	}
 
+
+	
 	/**
 	 * consulta o preço de venda
 	 * Caso esteja em um período, retornará o ultimo preço no período cadastrado
 	 * senão retornará o preço definido como padrão
 	 * */
-	public function consultarPrecoVenda(produtosModel $produto)
+	public function consultarPrecoVenda(precosModel $preco)
 	{
 		try{
 			$this->load->model('produtos/precosModel');
@@ -108,7 +109,7 @@ class precosDao extends Dao{
 					END
 					ORDER BY `P`.`id_produto_preco`  DESC LIMIT 1";
 
-			$this->db->setParameter(1, $produto->getId());
+			$this->db->setParameter(1, $preco->getProduto()->getId());
 
 			if($this->db->query($sql)):
 				$result = $this->db->result();
@@ -161,6 +162,42 @@ class precosDao extends Dao{
 
 	}
 
+
+	public function atualizar(precosModel $preco)
+ 	{
+ 		try{
+	 		$data = array(
+	 			'id_produto' => $produto->getId(),
+	 			'preco_produto' => $preco->getPreco(),
+	 			'data_inicio' => $preco->getDataInicio(),
+	 			'data_fim' => $preco->getDataFim(),
+	 			'preco_padrao' => $preco->getPadrao(),
+	 			'data_cadastro' => $preco->getDataCadastro()
+	 		);
+
+	 		print_r($data);
+	 		exit;
+
+	 		$this->db->clear();
+			$this->db->setTabela('produtos_preco');
+			$this->db->setCondicao('id_produto_preco = ?');
+			$this->db->setParameter(1, $preco->getId());
+			$this->db->update($data);
+			if($this->db->rowCount() > 0)
+			{
+				return true;
+	 		}else
+	 		{
+	 			return $this->db->getError();
+	 		}
+	 	
+ 		}catch(dbException $e)
+ 		{
+
+ 			return $e->getMessageError();
+ 		}
+
+	}
 
 	public function atualizarPrecoPadrao(precosModel $preco, produtosModel $produto)
  	{

@@ -6,15 +6,15 @@ if(!defined('URL')) die('Acesso negado');
 class checkPermissao extends Library{
 	private  $permissoes = null;
 	private $lastArray = Array();
-	private $latType;
+	private $lastType ;
 	public function __construct(){
 		parent::__construct();
-		
+		$this->lastType = 'modulo';
 	}
 
-	private function searchInModule($object, $slug)
+	private function searchInModule($modulo, $slug)
 	{
-		foreach ($object as $key => $value) 
+		foreach ($modulo as $key => $value) 
 		{
 			if($value->getUrl() == $slug && $value->getAcesso() == true)
 			{
@@ -25,9 +25,9 @@ class checkPermissao extends Library{
 		}
 		return false;
 	}
-	private function searchInPage($object, $slug)
+	private function searchInPage($pagina, $slug)
 	{
-		foreach ($object as $key => $value) 
+		foreach ($pagina as $key => $value) 
 		{
 			if($value->getUrl() == $slug && $value->getAcesso() == true)
 			{
@@ -38,38 +38,49 @@ class checkPermissao extends Library{
 		}
 		return false;
 	}
-	private function searchInAction($object, $slug)
+	private function searchInAction($action, $slug)
 	{
-		foreach ($object as $key => $value) 
+		foreach ($action as $key => $value) 
 		{
 			if($value->getUrl() == $slug && $value->getAcesso() == true)
 			{
 				$this->lastArray = $value;
-				return true;
-			}
-			
-		}
-		return false;
-	}
-
-	private function checkpermissao($slug)
-	{
-		 
-		if($this->searchInObject($this->lastArray, $slug))
-			return true;
-
-		if(method_exists($this->lastArray, 'getModulos'))
-			if($this->searchInModule($this->lastArray->getModulos(), $slug))
-				return true;
-
-		if(method_exists($this->lastArray, 'getPaginas'))
-			if($this->searchInPage($this->lastArray->getPaginas(), $slug))
-				return true;
 				
-		if(method_exists($this->lastArray, 'getActions'))
-			if($this->searchInAction($this->lastArray->getActions(), $slug))
 				return true;
+			}
+			
+		}
+		return false;
+	}
 
+	private function checkpermissaoAcesso($slug)
+	{
+		if($this->searchInModule($this->lastArray, $slug)){
+			$this->lastType = 'modulo';
+			return true;
+		}
+
+		if(method_exists($this->lastArray, 'getModulos')){
+			if($this->searchInModule($this->lastArray->getModulos(), $slug)){
+				$this->lastType = 'modulo';
+				return true;
+			}
+		}
+
+		if(method_exists($this->lastArray, 'getPaginas')){
+			if($this->searchInPage($this->lastArray->getPaginas(), $slug)){
+				$this->lastType = 'pagina';
+				return true;
+			}
+		}
+				
+		if(method_exists($this->lastArray, 'getActions')){
+			if($this->searchInAction($this->lastArray->getActions(), $slug)){
+				$this->lastType = 'action';
+				return true;
+			}
+		}
+		
 		return false;
 	}
 
@@ -78,6 +89,7 @@ class checkPermissao extends Library{
 	*/
 	public function check($redirect = true, $url = '')
 	{	
+		$this->lastType = 'modulo';
 		//verifica se está logado, se existe usuário na sessão
 		if($redirect== true && !isset($_SESSION['user']) ){
 			session_destroy();
@@ -85,7 +97,7 @@ class checkPermissao extends Library{
 			return false;
 		}
 
-		if($redirect == false && !isset($_SESSION['user']))
+		if(!isset($_SESSION['user']) && $redirect == false )
 		{
 			return false;
 		}
@@ -93,6 +105,7 @@ class checkPermissao extends Library{
 		if(unserialize($_SESSION['user'])->getNivelAcesso()->gettipoPermissao() != tipopermissao::ADMINISTRADOR){
 			$this->permissoes = unserialize($_SESSION['user'])->getNivelAcesso()->getPermissoes();
 			$this->lastArray = $this->permissoes;	
+			
 		}
 		else
 			return true;
@@ -101,29 +114,36 @@ class checkPermissao extends Library{
 		$this->load->url = new url($url);
 		$retorno = false;
 
-
+		// print_r($this->load->url->getCurrentUrl());
 		//se for diferente da tela inicial 
 		if(!empty($this->load->url->getUrl())){
 			//percorre todos os segmentos da url par verificação da permissão
 
 			foreach ($this->load->url->getUrl() as $key => $value) 
 			{
+				
 				if(empty($this->lastArray)){
 					break;
 				}
-				//verifica a permissão e define o retorno
-				if($this->checkpermissao($value))
+				if($this->lastType == 'action'){
+					break;
+				}
+				// //verifica a permissão e define o retorno
+				if($this->checkpermissaoAcesso($value) == true){
 					$retorno = true;
+				}
 				else{
 					$retorno = false;
 					break;
 				}
+
 			}
 		}else{
 			$retorno = true;
 		}
+		// echo $this->lastType;
 
-		// //se o retorno for false
+		//se o retorno for false
 		if($retorno == false)
 		{	
 			// e o redirecionamento for true, faz o redirecionamento e para tudo o que for executado depois do redirecionamento
@@ -135,7 +155,7 @@ class checkPermissao extends Library{
 			}
 		}else
 			return true;
-		
+		// var_dump($retorno);		
 	}
 
 }

@@ -207,9 +207,9 @@ class caixasDao extends Dao{
 
 		$this->db->clear();
 		$this->db->setTabela('abertura_caixa');
-		$this->db->setCondicao('id_caixa = ? AND id_abertura_caixa = ?');
-		$this->db->setParameter(1, $caixa->getId());
-		$this->db->setParameter(2, $caixa->getCaixaAberto()[0]->getId());
+		$this->db->setCondicao('id_abertura_caixa = ?');//id_caixa = ? AND 
+		// $this->db->setParameter(1, $caixa->getId());
+		$this->db->setParameter(1, $caixa->getCaixaAberto()[0]->getId());
 		if($this->db->update($data))
 		{
 			return true;
@@ -249,7 +249,7 @@ class caixasDao extends Dao{
 				'id_venda' => $caixa->getCaixaAberto()[0]->getVendas()[0]->getId(),
 				'id_produto' => $produtoVendido->getProduto()->getId(),
 				'quantidade_produto_vendido' => $produtoVendido->getQuantidade(),
-				'unidade_medida_vendido' =>'', //$produtoVendido->getProduto()->getUnidadeMedidaParaVenda()->getUnidadeMedida()->getAbreviacao(),
+				'unidade_medida_vendido' => '',//$produtoVendido->getProduto()->getUnidadeMedidaParaVenda()->getUnidadeMedida()->getNome(),
 				'preco_vendido' => $produtoVendido->getPrecoVendido()
 			);
 

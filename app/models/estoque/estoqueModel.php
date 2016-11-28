@@ -9,6 +9,7 @@ class estoqueModel{
 	private $nivelestoque;
 	private $quantidade_total;
 	private $lotes = Array();
+	private $logEntradas = Array();
 	
 	//set
 	public function setId($id)
@@ -37,7 +38,10 @@ class estoqueModel{
 	{
 		array_push($this->lotes, $lote);
 	}
-
+	public function setLogEntrada($logEntradas)
+	{
+		$this->logEntradas = $logEntradas;
+	}
 
 	//get
 	public function getId()
@@ -53,6 +57,10 @@ class estoqueModel{
 		return $this->nivelestoque;
 	}
 
+	public function getLogEntrada()
+	{
+		return $this->logEntradas;
+	}
 
 	/**
 	 * retorna a quantidade total do produto em estoque relacionada à unidade de medida 
@@ -113,6 +121,35 @@ class estoqueModel{
 	public function getLotes()
 	{
 		return $this->lotes;
+	}
+
+
+
+
+	/**
+	 * retorna a quantidade total do produtos entrados no estoque
+	 * que está sendo controlada
+	 * @return double
+	 * */
+	public function getQuantidadeEntradas()
+	{	
+		$qtdEntrada = 0;
+		foreach($this->logEntradas as $entrada)
+		{
+			$fator = $this->getProduto()->getUnidadeMedidaParaEstoque()->getFator();
+			if($this->getProduto()->getUnidadeMedidaParaEstoque()->getId() != $entrada->getUnidadeMedidaEstoque()->getId()){
+				$qtd = ($entrada->getQuantidade() * $entrada->getUnidadeMedidaEstoque()->getFator()) / $fator;
+			}else{
+
+				$qtd = ($entrada->getQuantidade() * $fator) / $entrada->getUnidadeMedidaEstoque()->getFator();
+			}
+			// echo '<pre>';
+			// print_r($entrada->getUnidadeMedidaEstoque());
+			// echo '</pre>';
+
+			$qtdEntrada += $qtd;
+		}
+		return $qtdEntrada;
 	}
 
 

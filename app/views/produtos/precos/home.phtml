@@ -38,7 +38,7 @@
                     <td><?=$dataFormat->formatar($preco->getPreco(), 'moeda')?></td>
                     <td>De: <?=$dataFormat->formatar($preco->getDataInicio(),'data')?> Até: <?=$dataFormat->formatar($preco->getDataFim(),'data')?></td>
                     <td>
-                        <a class="btn btn-primary btn_editar btn-sm" href="<?=URL?>produtos/marcas/gerenciar/editar/<?=$preco->getId()?>" role="button" id-record="<?=$preco->getId()?>" ><span class="glyphicon glyphicon-pencil"></span> Editar</a>
+                        <a class="btn btn-primary btn_editar btn-sm" href="<?=URL?>produtos/gerenciar/editarPreco/<?=$preco->getId()?>" role="button" id-record="<?=$preco->getId()?>" ><span class="glyphicon glyphicon-pencil"></span> Editar</a>
                         <a class="btn btn-danger btn_excluir btn-sm" href="javascript:void(0)" role="button" id="<?=$preco->getId()?>" data-value="<?=status::EXCLUIDO?>" ><span class="glyphicon glyphicon-remove"></span>Excluir</a>
                     </td>
                 </tr>

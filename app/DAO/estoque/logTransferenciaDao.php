@@ -319,26 +319,6 @@ class estoqueDao extends Dao{
 	}
 
 
-	public function registraLogTransferencia(estoqueModel $estoque, usuariosModel $usuario)
-	{
-		$lotesModel = new lotesModel();
-		$lotesModel = $estoque->getLotes()[0];
-
-		$data = array(
-			'id_usuario' => $usuario->getId(),
-			'id_produto_lote' => $lotesModel->getId(),
-			'quantidade_transferido' => $lotesModel->getLocalizacao()[0]->getQuantidade(),
-			'id_unidade_medida_produto' => $lotesModel->getLocalizacao()[0]->getUnidadeMedidaEstoque()->getId(),
-			'localizacao' => $lotesModel->getLocalizacao()[0]->getLocalizacao(),
-			'observacoes' => $lotesModel->getLocalizacao()[0]->getObservacoes(),
-			'aprovado' => true
-		);
-
-		$this->db->clear();
-		$this->db->setTabela('log_transferencia_lote');
-		$this->db->insert($data);
-	}
-
 
 	private function atualizaLoteLocalizacao($data, $id_produto_lote, $localizacao, $idUnidadeMedidaProduto)
 	{

@@ -24,7 +24,7 @@ class db{
 			|| !defined('DBNAME') 
 			|| !defined('MYSQLPORT')
 		){
-			foreach ($_db['userlogin'] as $key => $value)
+			foreach ($_db['default'] as $key => $value)
 			{
 				$key = strtoupper($key);
 				define($key,$value);

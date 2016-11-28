@@ -40,6 +40,8 @@ class precosModel{
      * */
 	private $dataCadastro;
 
+	private $produto;
+
  	//SETERS
  	public function setId($id)
  	{
@@ -66,7 +68,10 @@ class precosModel{
 		$this->dataCadastro = $dataCadastro;
 	}
 
-
+	public function setProduto(produtosModel $produto)
+	{
+		$this->produto = $produto;
+	}
 
 	//GETERS
  	public function getId()
@@ -94,4 +99,8 @@ class precosModel{
 		return $this->dataCadastro;
 	}
 
-}
+	public function getProduto()
+	{
+		return $this->produto;
+	}
+}	

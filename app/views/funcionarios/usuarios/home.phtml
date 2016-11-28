@@ -43,9 +43,9 @@
                         <?php endif;?>
         				</td>
                         <td>
-                        	<?=$this->templateFactory->getButton('editar',array('href'=> URL.'funcionarios/usuarios/gerenciar/editar/'.$usu->getId()))?>
+                        	<?=$this->templateFactory->getButton('editar',array('href'=> URL.'funcionarios/usuarios/gerenciar/editar/'.$usu->getId()), URL.'funcionarios/usuarios/gerenciar/editar/')?>
                        		<?php if($usu->getNivelAcesso()->getTipoPermissao() == tipopermissao::USUARIO):?>
-        					<?=$this->templateFactory->getButton('excluir', array('id'=> $usu->getId()));?>
+        					<?=$this->templateFactory->getButton('excluir', array('id'=> $usu->getId()), URL.'funcionarios/usuarios/gerenciar/excluir/');?>
                         	<?php endif;?>
         				</td>
                     </tr>

@@ -271,8 +271,8 @@ class gerenciar extends Controller{
 		$estado 				= isset($_POST['estado']) ? filter_var(trim($_POST['estado'])) : '';
 		//contato
 		$nomeContato 			= isset($_POST['nomeContato']) ? filter_var($_POST['nomeContato']) : '';
-		$telefones 				= isset($_POST['telefones']) ? filter_var_array($_POST['telefones']) : Array();
-		$emails 				= isset($_POST['emails']) ? filter_var_array($_POST['emails']) : Array();
+		$telefone 				= isset($_POST['telefone']) ? filter_var($_POST['telefone']) : '';
+		$email 					= isset($_POST['email']) ? filter_var($_POST['email']) : '';
 
 		
 		//validação dos dados
@@ -280,11 +280,13 @@ class gerenciar extends Controller{
 		
 		$this->load->dataValidator->set('Razao Social', $razaoSocial, 'razao_social')->is_required()->min_length(2);
 		$this->load->dataValidator->set('Nome Fantasia', $nomeFantasia, 'nome_fantasia')->is_required()->min_length(2);
-		$this->load->dataValidator->set('CNPJ', $cnpj, 'cnpj')->is_required()->is_required()->is_cnpj();
-		$this->load->dataValidator->set('CPF', $cpf, 'cpf')->is_required()->is_cpf();
+		if($pessoa == 'PJ')
+			$this->load->dataValidator->set('Pessoa', $pessoa, 'pessoa')->is_required();
+		else
+			$this->load->dataValidator->set('CPF', $cpf, 'cpf')->is_required();
 		$this->load->dataValidator->set('Pessoa', $pessoa, 'pessoa')->is_required();
-		$this->load->dataValidator->set_message('is_required',"Informe pelo menos um e-mail");
-		$this->load->dataValidator->set('E-mail', $emails, 'emails')->is_required();
+		
+		$this->load->dataValidator->set('E-mail', $email, 'email')->is_required();
 		
 		$this->load->dataValidator->set('CEP', $cep, 'cep')->is_required();
 		$this->load->dataValidator->set('Logradouro', $logradouro, 'logradouro')->is_required();
@@ -297,38 +299,7 @@ class gerenciar extends Controller{
 
 		if ($this->load->dataValidator->validate())
 		{
-			//TELEFONES
-			$telefonesList = Array();
-			$this->load->model('telefoneModel');
-			foreach ($telefones as $key => $telefone)
-			{
-				$telefone['idtelefone'] = isset($telefone['idtelefone']) ? $telefone['idtelefone'] : '';
-				$telefoneModel = new telefoneModel();
-				$telefoneModel->setId($telefone['idtelefone']);
-				$telefoneModel->setCategoria( $telefone['categoria'] );
-				$telefoneModel->setNumero( $telefone['telefone'] );
-				$telefoneModel->setOperadora( $telefone['operadora'] );
-				$telefoneModel->setTipo( $telefone['tipo_telefone'] );
-				array_push($telefonesList, $telefoneModel);
-				unset($telefoneModel);
-			}
-
-
-
-			//EMAILS
-			$emailList = Array();
-			$this->load->model('emailModel');
-			foreach ($emails as $email)
-			{
-				$email['idemail'] = isset($email['idemail']) ? $email['idemail'] : '';
-				$emailModel = new emailModel();
-				$emailModel->setId( $email['idemail'] );
-				$emailModel->setEmail( $email['email'] );
-				$emailModel->setTipo( $email['tipo_email'] );
-				array_push($emailList, $emailModel);
-				unset($emailModel);
-			}
-
+			
 			//ENDEREÇO
 			$this->load->model('enderecoModel');
 			$enderecoModel = new enderecoModel();
@@ -388,8 +359,8 @@ class gerenciar extends Controller{
 			$fornecedoresModel->setObservacoes($observacoes);
 			$fornecedoresModel->setNomeContato($nomeContato);
 			$fornecedoresModel->setEndereco($enderecoModel);
-			$fornecedoresModel->setTelefones($telefonesList);
-			$fornecedoresModel->setEmails($emailList);
+			$fornecedoresModel->setTelefone($telefone);
+			$fornecedoresModel->setEmail($email);
 			$fornecedoresModel->setDataCadastro(date('Y-m-d h:i:s'));
 
 

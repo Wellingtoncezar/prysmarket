@@ -1,4 +1,72 @@
 $(document).ready(function(){
+
+	//notificação de agendamento de fornecedores
+    $.post(url+'agenda/gerenciar/notificar',{},function(data){
+        console.log(data)
+        data = jQuery.parseJSON(data);
+        if(!jQuery.isEmptyObject(data))
+        {
+            $.each(data, function(index, val) {
+                var content = "<tr>"+
+                                    "<td>"+val.data+"</td>"+
+                                    "<td>"+val.nome_fornecedor+"</td>"+
+                                    "<td>"+val.titulo+"</td>"+
+                                "</th>"
+
+
+                $('#tableNotificacaoAgendaFornec').append(content)
+            });
+            $('#modalNotificacaoFornecedores').modal('show')
+        }
+    });
+
+    //lista de agendamentos para o dia atual
+    var d = new Date();
+    var dia = d.getDate();
+    var mes = d.getMonth()+1;
+    var ano = d.getFullYear();
+    console.log(url+'agenda/gerenciar/listarCompromissosAgendados/'+dia+'/'+mes+'/'+ano);
+    $.post(url+'agenda/gerenciar/listarCompromissosAgendados/'+dia+'/'+mes+'/'+ano,{}, function(data){
+     	console.log('teset')
+     	$('#compromissoes').html(data);
+    });
+
+
+    //AGENDA DOS FORNECEDORES DASHBOARD
+
+    // var monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    // var dayNames = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"];
+    // $('#agendaDosFornecedores').bic_calendar({
+    //     //list of events in array
+    //     //events: events,
+    //     //enable select
+    //     enableSelect: false,
+    //     //enable multi-select
+    //     multiSelect: false,
+    //     //set day names
+    //     dayNames: dayNames,
+    //     //set month names
+    //     monthNames: monthNames,
+    //     //show dayNames
+    //     showDays: true,
+    //     //set ajax call
+    //     reqAjax: {
+    //         type: 'post',
+    //         //parameters : {classe: 1},
+    //         url: url+'agenda/gerenciar/listarAgendaMes'
+    //     }
+    //     //set popover options
+    //     //popoverOptions: {}
+    //     //set tooltip options
+    //     //tooltipOptions: {}
+    // });
+
+
+
+
+    
+
+
 	$('.statusSelect').each(function(index, el) {
 		if($('option:selected',this).hasClass('active'))
 			$(this).removeClass('inactive').addClass('active');
@@ -50,30 +118,11 @@ $(document).ready(function(){
         $('.rwd-table tbody td .dataTables-th').remove()
     }
 
-    //notificação de agendamento de fornecedores
-    $.post(url+'agenda/gerenciar/notificar',{},function(data){
-        console.log(data)
-        data = jQuery.parseJSON(data);
-        if(!jQuery.isEmptyObject(data))
-        {
-            $.each(data, function(index, val) {
-                var content = "<tr>"+
-                                    "<td>"+val.data+"</td>"+
-                                    "<td>"+val.nome_fornecedor+"</td>"+
-                                    "<td>"+val.titulo+"</td>"+
-                                "</th>"
-
-
-                $('#tableNotificacaoAgendaFornec').append(content)
-            });
-            $('#modalNotificacaoFornecedores').modal('show')
-        }
-
-    })
     
-     $('[data-toggle="tooltip"]').tooltip()
+    
+    $('[data-toggle="tooltip"]').tooltip();
 
-
+    
 
 });
 
