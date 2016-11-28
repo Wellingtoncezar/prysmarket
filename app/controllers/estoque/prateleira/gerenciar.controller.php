@@ -257,11 +257,11 @@ class gerenciar extends Controller{
 			$estoqueDao = new estoqueDao();	
 			$lotePertoVencer = $estoqueDao->verificaDataValidade($estoqueModel);
 			
-			if(!$estoqueDao->verificaQuantidadeTransferencia($estoqueModel, localizacoes::ARMAZEM)){
+			if(!$estoqueDao->verificaQuantidadeTransferencia($estoqueModel, localizacoes::PRATELEIRA)){
 				$mensagem = "Quantidade insuficiente para realizar o descarte";
 				$this->http->response($mensagem);
 			}else{
-				$this->http->response($estoqueDao->transferir($estoqueModel, localizacoes::ARMAZEM));
+				$this->http->response($estoqueDao->transferir($estoqueModel, localizacoes::PRATELEIRA));
 			}
 		}else
 	    {

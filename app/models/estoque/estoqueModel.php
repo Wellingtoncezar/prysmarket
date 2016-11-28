@@ -97,7 +97,8 @@ class estoqueModel{
 				}else
 				if(localizacoes::DESCARTADOS == $localizacao->getLocalizacao())
 				{
-					$fator = $this->getProduto()->getUnidadeMedidaParaVenda()->getFator();
+
+					$fator = $this->getProduto()->getUnidadeMedidaParaEstoque()->getFator();
 
 					if($this->getProduto()->getUnidadeMedidaParaEstoque()->getId() != $localizacao->getUnidadeMedidaEstoque()->getId()){
 						$qtd = ($qtdLoteLocal * $localizacao->getUnidadeMedidaEstoque()->getFator()) / $fator;

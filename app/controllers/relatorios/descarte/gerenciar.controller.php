@@ -93,9 +93,3 @@ class gerenciar extends Controller{
 	
 }
 
-/**
-*
-*class: home
-*
-*location : controllers/home.controller.php
-*/

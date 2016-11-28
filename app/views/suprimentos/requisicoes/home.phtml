@@ -5,14 +5,14 @@
         echo $this->templateFactory->getButton("actions_buttons",array('buttons'=>$btnCadastrar));
     ?>
     <div class="page-header">
-      <h1>Requisições Automáticas e Manuais</h1>
+      <h1>Requisições</h1>
     </div>
     <div class="middle-content">
         <?php
             $thead = '  <tr>
                             <th width="100">Código</th>
                             <th width="160">Cadastrado por</th>
-                            <th width="160">Aprovado por</th>
+                 
                             <th width="160">Titulo</th>
                             <th width="160">Data</th>
                             <th width="180">Ações</th>
@@ -20,7 +20,7 @@
             $tfoot = '  <tr>
                             <td>Código</td>
                             <th>Cadastrado por</th>
-                            <th>Aprovado por</th>
+                        
                             <td>Titulo</td>
                             <td>Data</td>
                             <td>Ações</td>
@@ -35,12 +35,12 @@
             $tbody .='  <tr id="'.$requisicao->getId().'">
                             <td>'.$requisicao->getCodigo().'</td>
                             <td>'.$requisicao->getUsuarioCadastrado()->getFuncionario()->getNome().'</td>
-                            <td></td>
+                          
                             <td>'.$requisicao->getTitulo().'</td>
                             <td>'.$dataFormat->formatar($requisicao->getData(),'datahora').'</td>
                             <td>'
-                                .$this->templateFactory->getButton('visualizar',array('href'=>URL.'suprimentos/requisicoes/gerenciar/listarprodutosrequisitados/'.$requisicao->getId(), 'title'=>'Visualizar')).
-                                $this->templateFactory->getButton('Editar',array('href'=>URL.'suprimentos/requisicoes/gerenciar/editar/'.$requisicao->getId(), 'title'=>'Editar')).
+                                .$this->templateFactory->getButton('visualizar',array('href'=>URL.'suprimentos/requisicoes/gerenciar/listarprodutosrequisitados/'.$requisicao->getId(), 'title'=>'Visualizar'), URL.'suprimentos/requisicoes/gerenciar/listarprodutosrequisitados/').
+                                $this->templateFactory->getButton('Editar',array('href'=>URL.'suprimentos/requisicoes/gerenciar/editar/'.$requisicao->getId(), 'title'=>'Editar'), URL.'suprimentos/requisicoes/gerenciar/editar/').
                                 $this->templateFactory->getButton('excluir', array('id'=> $requisicao->getId()), URL.'suprimentos/requisicoes/gerenciar/excluir/').
                             '</td>
                         </tr>';

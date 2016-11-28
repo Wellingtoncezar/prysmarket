@@ -87,7 +87,7 @@ $(function(){
     	var produto = $('select[name=produto]').val();
 
     	$.ajax({
-    		url: url+'relatorios/estoque/gerenciar/consultaRelatorio',
+    		url: url+'relatorios/descarte/gerenciar/consultaRelatorio',
     		type: 'POST',
     		dataType: 'json',
     		data: {periodoDe: dataDe, periodoAte:dataAte, produto:produto},
