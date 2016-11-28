@@ -84,13 +84,13 @@ $(function(){
     {
     	var dataDe = $( "input[name=de]" ).val();
     	var dataAte = $( "input[name=ate]" ).val();
-    	var produto = $('select[name=produto]').val();
+
 
     	$.ajax({
     		url: url+'relatorios/vendas/gerenciar/consultaRelatorio',
     		type: 'POST',
     		dataType: 'json',
-    		data: {periodoDe: dataDe, periodoAte:dataAte, produto:produto},
+    		data: {periodoDe: dataDe, periodoAte:dataAte},
     	})
     	.done(function(data) {
     		console.log(data);

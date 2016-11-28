@@ -164,6 +164,8 @@ class fornecedoresDao extends Dao{
  			'cpf_fornecedor' => $fornecedor->getCpf(),
  			'pessoa_fornecedor' => $fornecedor->getPessoa(),
  			'site_fornecedor' => $fornecedor->getSite(),
+ 			'email_fornecedor' => $fornecedor->getEmail(),
+ 			'telefone_fornecedor' => $fornecedor->getTelefone(),
  			'observacoes_fornecedor' => $fornecedor->getObservacoes(),
  			'nome_contato_fornecedor' => $fornecedor->getNomeContato()
  		);
